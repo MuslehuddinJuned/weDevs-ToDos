@@ -39,9 +39,21 @@ class TodosController extends Controller
     public function store(Request $request)
     {
 
-        $todo = Todo::orderBy('created_at','desc')->get();
+        // $request->Todo()->create($request->validate(['name' => 'required']));
+            $Todo = new Todo;
+            $Todo->name = $request['name'];
+            $Todo->save();
+        // return response()->json([
+        //     'message' => 'Your answer has been submitted successfully'
+        // ]);
+        if($request->expectsJson()){
+            return response()->json([
+                'message' => 'Your answer has been submitted successfully'
+                
+            ]);
+        }
 
-        return view('./todo', compact('todo'));
+        return back();
         
     }
 
@@ -87,6 +99,6 @@ class TodosController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        //
+        $todo->delete();
     }
 }
