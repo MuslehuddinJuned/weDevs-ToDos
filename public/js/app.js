@@ -1899,6 +1899,59 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NewTodo.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NewTodo.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      todoItem: ''
+    };
+  },
+  methods: {
+    create: function create() {
+      var _this = this;
+
+      axios.post("/todos", {
+        name: this.todoItem
+      })["catch"](function (error) {
+        alert(error.response.data.message);
+      }).then(function (_ref) {
+        var data = _ref.data;
+
+        _this.$emit('created', data.NewTask);
+      });
+    },
+    handleSubmit: function handleSubmit() {
+      if (this.todoItem.trim()) {
+        this.todoItem = '';
+      }
+    },
+    clearText: function clearText() {
+      this.todoItem = '';
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Todo.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Todo.vue?vue&type=script&lang=js& ***!
@@ -1921,25 +1974,62 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['todo'],
+  props: ['todoItems'],
   data: function data() {
     return {
-      id: this.todo.id
+      id: this.todoItems.id,
+      todoItem: this.todoItems.name,
+      complete: this.todoItems.complete
     };
   },
   methods: {
     destroy: function destroy() {
       var _this = this;
 
-      axios["delete"]("/todos/".concat(this.id)).then(function (res) {
-        $(_this.$etl).fadeout(500, function () {
-          alert(res.data.message);
-        });
+      axios["delete"]("/todos/".concat(this.id))["catch"](function (err) {
+        alert(err.response.data.message);
+      }).then(function (res) {
+        $(_this.$el).fadeOut(200);
       });
+    },
+    updateTask: function updateTask() {
+      axios.patch("/todos/".concat(this.id), {
+        name: this.todoItem
+      })["catch"](function (err) {
+        alert(err.response.data.message);
+      });
+    },
+    completed: function completed() {
+      var _this2 = this;
+
+      axios.patch("/todos/".concat(this.id), {
+        complete: 'Yes'
+      }).then(function (_ref) {
+        var data = _ref.data;
+        _this2.complete = true;
+        _this2.count++;
+      })["catch"](function (err) {
+        alert(err.response.data.message);
+      });
+    },
+    incomplete: function incomplete() {
+      var _this3 = this;
+
+      axios.patch("/todos/".concat(this.id), {
+        complete: null
+      })["catch"](function (err) {
+        alert(err.response.data.message);
+      }).then(function (_ref2) {
+        var data = _ref2.data;
+        _this3.count--;
+        _this3.complete = false;
+      });
+    }
+  },
+  computed: {
+    classes: function classes() {
+      return [this.complete ? 'text-secondary lineThrough' : ''];
     }
   }
 });
@@ -1956,6 +2046,15 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Todo_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Todo.vue */ "./resources/js/components/Todo.vue");
+/* harmony import */ var _NewTodo_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NewTodo.vue */ "./resources/js/components/NewTodo.vue");
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1980,34 +2079,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    todo: _Todo_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Todo: _Todo_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    NewTodo: _NewTodo_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  props: ['todo'],
+  props: ['todo', 'todoremain'],
   data: function data() {
     return {
-      todoItem: ''
+      todoItems: [],
+      count: 0
     };
   },
+  created: function created() {
+    this.todoItems = this.todo;
+    this.count = this.todoremain.length;
+  },
   methods: {
-    create: function create() {
-      axios.post("/todos", {
-        name: this.todoItem
-      })["catch"](function (error) {
-        console.log(error);
-      });
-    },
-    handleSubmit: function handleSubmit() {
-      if (this.todoItem.trim()) {
-        this.todo.push({
-          name: this.todoItem
-        });
-        this.todoItem = '';
-      }
-    },
-    clearText: function clearText() {
-      this.todoItem = '';
+    add: function add(NewTask) {
+      this.todoItems.push(NewTask);
+    }
+  },
+  computed: {
+    TaskRemain: function TaskRemain() {
+      return this.count + " " + (this.count > 1 ? 'items left' : 'item left');
     }
   }
 });
@@ -37643,6 +37739,95 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NewTodo.vue?vue&type=template&id=55ab272a&":
+/*!**********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NewTodo.vue?vue&type=template&id=55ab272a& ***!
+  \**********************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "form",
+      {
+        on: {
+          submit: function($event) {
+            $event.preventDefault()
+            return _vm.create($event)
+          }
+        }
+      },
+      [
+        _c("div", { staticClass: " form-group" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.todoItem,
+                expression: "todoItem"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              name: "todoItem",
+              id: "todoItem",
+              type: "text",
+              placeholder: "What needs to be done?"
+            },
+            domProps: { value: _vm.todoItem },
+            on: {
+              keyup: [
+                function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  return _vm.handleSubmit($event)
+                },
+                function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "esc", 27, $event.key, [
+                      "Esc",
+                      "Escape"
+                    ])
+                  ) {
+                    return null
+                  }
+                  return _vm.clearText($event)
+                }
+              ],
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.todoItem = $event.target.value
+              }
+            }
+          })
+        ])
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Todo.vue?vue&type=template&id=56644c31&":
 /*!*******************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Todo.vue?vue&type=template&id=56644c31& ***!
@@ -37659,34 +37844,45 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("ul", { staticClass: "list-group mb-3" }, [
-      _c(
-        "li",
-        {
-          staticClass:
-            "list-group-item d-flex justify-content-between align-items-center"
-        },
-        [
-          _c("div", { staticClass: "d-flex align-items-center" }, [
-            _c("h2", [_vm._v(_vm._s(_vm.todo.name))]),
-            _vm._v(
-              " " +
-                _vm._s(_vm.todo.id) +
-                "                   \r\n                "
-            ),
-            _c("div", { staticClass: "ml-auto" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-outline-danger",
-                  on: { click: _vm.destroy }
-                },
-                [_vm._v("Delete")]
-              )
-            ])
-          ])
-        ]
-      )
+    _c("div", { staticClass: "input-icons w-100" }, [
+      _vm.complete
+        ? _c("i", {
+            staticClass: "far fa-check-circle icon text-success",
+            on: { click: _vm.incomplete }
+          })
+        : _c("i", {
+            staticClass: "far fa-circle icon text-secondary",
+            on: { click: _vm.completed }
+          }),
+      _vm._v(" "),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.todoItem,
+            expression: "todoItem"
+          }
+        ],
+        staticClass: "input-field border-0 w-100 lead",
+        class: _vm.classes,
+        attrs: { name: "todoItem", type: "text" },
+        domProps: { value: _vm.todoItem },
+        on: {
+          keyup: _vm.updateTask,
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.todoItem = $event.target.value
+          }
+        }
+      }),
+      _vm._v(" "),
+      _c("i", {
+        staticClass: "fas fa-times icon text-light",
+        on: { click: _vm.destroy }
+      })
     ])
   ])
 }
@@ -37718,87 +37914,37 @@ var render = function() {
         _c("div", { staticClass: "card" }, [
           _vm._m(0),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "form",
-              {
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    return _vm.create($event)
-                  }
-                }
-              },
-              [
-                _c("div", { staticClass: " form-group" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.todoItem,
-                        expression: "todoItem"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      name: "todoItem",
-                      id: "todoItem",
-                      type: "text",
-                      placeholder: "What needs to be done?"
-                    },
-                    domProps: { value: _vm.todoItem },
-                    on: {
-                      keyup: [
-                        function($event) {
-                          if (
-                            !$event.type.indexOf("key") &&
-                            _vm._k(
-                              $event.keyCode,
-                              "enter",
-                              13,
-                              $event.key,
-                              "Enter"
-                            )
-                          ) {
-                            return null
-                          }
-                          return _vm.handleSubmit($event)
-                        },
-                        function($event) {
-                          if (
-                            !$event.type.indexOf("key") &&
-                            _vm._k($event.keyCode, "esc", 27, $event.key, [
-                              "Esc",
-                              "Escape"
-                            ])
-                          ) {
-                            return null
-                          }
-                          return _vm.clearText($event)
-                        }
-                      ],
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.todoItem = $event.target.value
-                      }
-                    }
-                  })
-                ])
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "ul",
-              { staticClass: "list-group mb-3" },
-              _vm._l(_vm.todo, function(todos) {
-                return _c("todo", { key: todos.id, attrs: { todo: todos } })
+          _c(
+            "div",
+            { staticClass: "card-body" },
+            [
+              _c("new-todo", { on: { created: _vm.add } }),
+              _vm._v(" "),
+              _vm._l(_vm.todoItems, function(todos) {
+                return _c("todo", {
+                  key: todos.id,
+                  attrs: { todoItems: todos }
+                })
               }),
-              1
-            )
-          ])
+              _vm._v(" "),
+              _c("hr"),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col-3" }, [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.TaskRemain) +
+                      " \n                        "
+                  )
+                ]),
+                _vm._v(" "),
+                _vm._m(1),
+                _vm._v(" "),
+                _vm._m(2)
+              ])
+            ],
+            2
+          )
         ])
       ])
     ])
@@ -37811,6 +37957,42 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "card-header" }, [
       _c("h1", { staticClass: "text-center" }, [_vm._v("todos")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-6 text-center" }, [
+      _c(
+        "a",
+        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
+        [_vm._v("All |")]
+      ),
+      _vm._v(" "),
+      _c(
+        "a",
+        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
+        [_vm._v("| Active |")]
+      ),
+      _vm._v(" "),
+      _c(
+        "a",
+        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
+        [_vm._v("| Completed")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-3 text-right" }, [
+      _c(
+        "a",
+        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
+        [_vm._v("Clear Completed")]
+      )
     ])
   }
 ]
@@ -50062,6 +50244,75 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/NewTodo.vue":
+/*!*********************************************!*\
+  !*** ./resources/js/components/NewTodo.vue ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _NewTodo_vue_vue_type_template_id_55ab272a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NewTodo.vue?vue&type=template&id=55ab272a& */ "./resources/js/components/NewTodo.vue?vue&type=template&id=55ab272a&");
+/* harmony import */ var _NewTodo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NewTodo.vue?vue&type=script&lang=js& */ "./resources/js/components/NewTodo.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _NewTodo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _NewTodo_vue_vue_type_template_id_55ab272a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _NewTodo_vue_vue_type_template_id_55ab272a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/NewTodo.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/NewTodo.vue?vue&type=script&lang=js&":
+/*!**********************************************************************!*\
+  !*** ./resources/js/components/NewTodo.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_NewTodo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./NewTodo.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NewTodo.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_NewTodo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/NewTodo.vue?vue&type=template&id=55ab272a&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/NewTodo.vue?vue&type=template&id=55ab272a& ***!
+  \****************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NewTodo_vue_vue_type_template_id_55ab272a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./NewTodo.vue?vue&type=template&id=55ab272a& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NewTodo.vue?vue&type=template&id=55ab272a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NewTodo_vue_vue_type_template_id_55ab272a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NewTodo_vue_vue_type_template_id_55ab272a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 

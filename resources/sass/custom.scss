@@ -1,0 +1,37 @@
+//for icon inside input field
+
+
+.input-icons {
+    display: inline-flex;
+    position: relative;
+    font-size: large;
+  }
+  
+  .icon {
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .input-field {
+    border: 0;
+    width: 100%;
+  }
+
+  .input-icons:hover {    
+    background-color: #F8FAFC;
+    .fa-times {
+      color: gray !important;
+    }
+    .fa-times:hover {
+      color: red !important;
+    }
+    .input-field {
+      background-color: #F8FAFC;
+    }
+  }
+
+  .lineThrough {
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+

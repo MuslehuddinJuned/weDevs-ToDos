@@ -15,9 +15,10 @@ class TodosController extends Controller
      */
     public function index()
     {
-        $todo = Todo::orderBy('created_at','desc')->get();
+        $todo = Todo::orderBy('created_at','asc')->get();
+        $todoRemain = DB::select('SELECT * FROM `todos` where complete IS NULL');
 
-        return view('./todo', compact('todo'));
+        return view('./todo', compact('todo', 'todoRemain'));
     }
 
     /**
@@ -39,21 +40,17 @@ class TodosController extends Controller
     public function store(Request $request)
     {
 
-        // $request->Todo()->create($request->validate(['name' => 'required']));
+            // $newtask = $request->user()->todos()->create();
+
             $Todo = new Todo;
             $Todo->name = $request['name'];
             $Todo->save();
-        // return response()->json([
-        //     'message' => 'Your answer has been submitted successfully'
-        // ]);
-        if($request->expectsJson()){
-            return response()->json([
-                'message' => 'Your answer has been submitted successfully'
-                
-            ]);
-        }
 
-        return back();
+            if(request()->expectsJson()){
+                return response()->json([
+                    'NewTask' => $Todo
+                ]);
+            }
         
     }
 
@@ -88,7 +85,24 @@ class TodosController extends Controller
      */
     public function update(Request $request, Todo $todo)
     {
-        //
+        // print_r($request);
+        // dd($request); 
+        // $todo->update($request);
+        $Todo = Todo::find($todo->id);
+        if($request['complete'])
+        $todo->complete = $request['complete'];
+        if($request['name'])
+        $todo->name = $request['name'];
+        if(!$request['name'] && !$request['complete'])
+        $todo->complete = NULL;
+        $todo->save();
+        // $todoList = Todo::orderBy('created_at','asc')->get();
+
+        if(request()->expectsJson()){
+            return response()->json([
+                // 'todoList' => $todoList
+            ]);
+        }
     }
 
     /**
@@ -100,5 +114,10 @@ class TodosController extends Controller
     public function destroy(Todo $todo)
     {
         $todo->delete();
+        // if(request()->expectsJson()){
+        //     return response()->json([
+        //         'message' => "Deleted"
+        //     ]);
+        // }
     }
 }

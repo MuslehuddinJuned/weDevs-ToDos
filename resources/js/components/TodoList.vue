@@ -1,55 +1,63 @@
 <template>
-<div>    
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header"><h1 class="text-center">todos</h1></div>
+    <div>    
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header"><h1 class="text-center">todos</h1></div>
 
-                <div class="card-body">                    
-                    <form @submit.prevent="create">
-                        <div class=" form-group">
-                            <input name="todoItem" id="todoItem" v-on:keyup.enter="handleSubmit" v-on:keyup.esc="clearText" v-model="todoItem" type="text" class="form-control" placeholder="What needs to be done?">
+                    <div class="card-body">                    
+                        <new-todo @created="add"></new-todo>
+                        <todo v-for="todos in todoItems" :todoItems="todos" :key="todos.id"></todo>
+                        <hr>
+                        <div class="row">
+                            <div class="col-3">
+                                {{ TaskRemain }} 
+                            </div>
+                            <div class="col-6 text-center">
+                                <a href="" class="text-muted text-decoration-none">All |</a>
+                                <a href="" class="text-muted text-decoration-none">| Active |</a>
+                                <a href="" class="text-muted text-decoration-none">| Completed</a>
+                            </div>
+                            <div class="col-3 text-right">
+                                <a href="" class="text-muted text-decoration-none">Clear Completed</a>
+                            </div>
                         </div>
-                    </form> 
-                    <ul class="list-group mb-3">
-                        <todo v-for="todos in todo" :todo="todos" :key="todos.id"></todo>  
-                    </ul>
-                </div>               
+                    </div>               
+                </div>
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
-import todo from './Todo.vue';
+import Todo from './Todo.vue';
+import NewTodo from './NewTodo.vue';
     export default {
-        components: {todo},
-        props: ['todo'],
+        components: {Todo, NewTodo},
+
+        props: ['todo', 'todoremain'],
+
         data(){
             return {
-                todoItem: ''
+                todoItems: [],
+                count: 0,
             }
         },
-        methods: {
-            create(){
-                axios.post(`/todos`, {
-                    name: this.todoItem
-                })
-                .catch(error => {
-                console.log(error);
-                })
+
+        created(){
+            this.todoItems = this.todo;
+            this.count = this.todoremain.length;
+        },
+
+        methods: {            
+            add(NewTask){
+                this.todoItems.push(NewTask);
             },
-            handleSubmit () {
-                if (this.todoItem.trim()) {
-                    this.todo.push({
-                        name: this.todoItem
-                    });
-                    this.todoItem = ''
-                }
-            },
-            clearText () {
-                this.todoItem = ''
+        },
+
+        computed: {
+            TaskRemain(){
+                return this.count + " " + (this.count > 1 ? 'items left' : 'item left');
             }
         }
     }
