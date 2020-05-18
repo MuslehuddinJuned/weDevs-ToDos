@@ -1936,7 +1936,9 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (_ref) {
         var data = _ref.data;
 
-        _this.$emit('created', data.NewTask);
+        _this.$emit('created_1', data.NewTask);
+
+        _this.$emit('created_2', data.IncompleteList);
       });
     },
     handleSubmit: function handleSubmit() {
@@ -1972,8 +1974,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['todoItems'],
   data: function data() {
@@ -1989,41 +1989,68 @@ __webpack_require__.r(__webpack_exports__);
 
       axios["delete"]("/todos/".concat(this.id))["catch"](function (err) {
         alert(err.response.data.message);
-      }).then(function (res) {
+      }).then(function (_ref) {
+        var data = _ref.data;
         $(_this.$el).fadeOut(200);
+
+        _this.$emit('created_1', data.FullList);
+
+        _this.$emit('created_2', data.CompleteList);
+
+        _this.$emit('created_3', data.IncompleteList);
       });
     },
     updateTask: function updateTask() {
+      var _this2 = this;
+
       axios.patch("/todos/".concat(this.id), {
         name: this.todoItem
+      }).then(function (_ref2) {
+        var data = _ref2.data;
+
+        _this2.$emit('created_1', data.FullList);
+
+        _this2.$emit('created_2', data.CompleteList);
+
+        _this2.$emit('created_3', data.IncompleteList);
       })["catch"](function (err) {
         alert(err.response.data.message);
       });
     },
     completed: function completed() {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.patch("/todos/".concat(this.id), {
         complete: 'Yes'
-      }).then(function (_ref) {
-        var data = _ref.data;
-        _this2.complete = true;
-        _this2.count++;
+      }).then(function (_ref3) {
+        var data = _ref3.data;
+        _this3.complete = true;
+
+        _this3.$emit('created_1', data.FullList);
+
+        _this3.$emit('created_2', data.CompleteList);
+
+        _this3.$emit('created_3', data.IncompleteList);
       })["catch"](function (err) {
         alert(err.response.data.message);
       });
     },
     incomplete: function incomplete() {
-      var _this3 = this;
+      var _this4 = this;
 
       axios.patch("/todos/".concat(this.id), {
         complete: null
       })["catch"](function (err) {
         alert(err.response.data.message);
-      }).then(function (_ref2) {
-        var data = _ref2.data;
-        _this3.count--;
-        _this3.complete = false;
+      }).then(function (_ref4) {
+        var data = _ref4.data;
+        _this4.complete = false;
+
+        _this4.$emit('created_1', data.FullList);
+
+        _this4.$emit('created_2', data.CompleteList);
+
+        _this4.$emit('created_3', data.IncompleteList);
       });
     }
   },
@@ -2078,6 +2105,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2085,25 +2120,64 @@ __webpack_require__.r(__webpack_exports__);
     Todo: _Todo_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     NewTodo: _NewTodo_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  props: ['todo', 'todoremain'],
+  props: ['todo', 'todoremain', 'todocomplete'],
   data: function data() {
     return {
       todoItems: [],
-      count: 0
+      todoLeft: [],
+      todoDone: [],
+      count: 0,
+      list: 'all',
+      id: 'complete'
     };
   },
   created: function created() {
     this.todoItems = this.todo;
+    this.todoLeft = this.todoremain;
+    this.todoDone = this.todocomplete;
     this.count = this.todoremain.length;
   },
   methods: {
+    destroy: function destroy() {
+      var _this = this;
+
+      axios["delete"]("/todos/".concat(this.id))["catch"](function (err) {
+        alert(err.response.data.message);
+      }).then(function (_ref) {
+        var data = _ref.data;
+        _this.todoItems = data.FullList;
+        _this.todoDone = data.CompleteList;
+        _this.todoLeft = data.IncompleteList;
+      });
+    },
     add: function add(NewTask) {
       this.todoItems.push(NewTask);
+    },
+    TaskAll: function TaskAll(FullList) {
+      this.todoItems = FullList;
+      this.count = this.todoLeft.length;
+    },
+    TaskDone: function TaskDone(CompleteList) {
+      this.todoDone = CompleteList;
+      this.count = this.todoLeft.length;
+    },
+    TaskLeft: function TaskLeft(IncompleteList) {
+      this.todoLeft = IncompleteList;
+      this.count = this.todoLeft.length;
     }
   },
   computed: {
     TaskRemain: function TaskRemain() {
       return this.count + " " + (this.count > 1 ? 'items left' : 'item left');
+    },
+    classes_1: function classes_1() {
+      return [this.list == 'all' ? 'font-weight-bold text-success' : 'text-muted'];
+    },
+    classes_2: function classes_2() {
+      return [this.list == 'incomplete' ? 'font-weight-bold text-success' : 'text-muted'];
+    },
+    classes_3: function classes_3() {
+      return [this.list == 'complete' ? 'font-weight-bold text-success' : 'text-muted'];
     }
   }
 });
@@ -37869,7 +37943,16 @@ var render = function() {
         attrs: { name: "todoItem", type: "text" },
         domProps: { value: _vm.todoItem },
         on: {
-          keyup: _vm.updateTask,
+          keyup: function($event) {
+            if (
+              !$event.type.indexOf("key") &&
+              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+            ) {
+              return null
+            }
+            return _vm.updateTask($event)
+          },
+          blur: _vm.updateTask,
           input: function($event) {
             if ($event.target.composing) {
               return
@@ -37918,14 +38001,57 @@ var render = function() {
             "div",
             { staticClass: "card-body" },
             [
-              _c("new-todo", { on: { created: _vm.add } }),
-              _vm._v(" "),
-              _vm._l(_vm.todoItems, function(todos) {
-                return _c("todo", {
-                  key: todos.id,
-                  attrs: { todoItems: todos }
-                })
+              _c("new-todo", {
+                on: { created_1: _vm.add, created_2: _vm.TaskLeft }
               }),
+              _vm._v(" "),
+              _vm.list == "complete"
+                ? _c(
+                    "div",
+                    _vm._l(_vm.todoDone, function(todos) {
+                      return _c("todo", {
+                        key: todos.id,
+                        attrs: { todoItems: todos },
+                        on: {
+                          created_1: _vm.TaskAll,
+                          created_2: _vm.TaskDone,
+                          created_3: _vm.TaskLeft
+                        }
+                      })
+                    }),
+                    1
+                  )
+                : _vm.list == "incomplete"
+                ? _c(
+                    "div",
+                    _vm._l(_vm.todoLeft, function(todos) {
+                      return _c("todo", {
+                        key: todos.id,
+                        attrs: { todoItems: todos },
+                        on: {
+                          created_1: _vm.TaskAll,
+                          created_2: _vm.TaskDone,
+                          created_3: _vm.TaskLeft
+                        }
+                      })
+                    }),
+                    1
+                  )
+                : _c(
+                    "div",
+                    _vm._l(_vm.todoItems, function(todos) {
+                      return _c("todo", {
+                        key: todos.id,
+                        attrs: { todoItems: todos },
+                        on: {
+                          created_1: _vm.TaskAll,
+                          created_2: _vm.TaskDone,
+                          created_3: _vm.TaskLeft
+                        }
+                      })
+                    }),
+                    1
+                  ),
               _vm._v(" "),
               _c("hr"),
               _vm._v(" "),
@@ -37938,12 +38064,66 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(1),
+                _c("div", { staticClass: "col-6 text-center" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "btn text-decoration-none",
+                      class: _vm.classes_1,
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.list = "all"
+                        }
+                      }
+                    },
+                    [_vm._v("All")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "a",
+                    {
+                      staticClass: "btn text-decoration-none",
+                      class: _vm.classes_2,
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.list = "incomplete"
+                        }
+                      }
+                    },
+                    [_vm._v("Active")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "a",
+                    {
+                      staticClass: "btn text-decoration-none",
+                      class: _vm.classes_3,
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.list = "complete"
+                        }
+                      }
+                    },
+                    [_vm._v("Completed")]
+                  )
+                ]),
                 _vm._v(" "),
-                _vm._m(2)
+                _c("div", { staticClass: "col-3 text-right" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "btn text-muted text-decoration-none",
+                      on: { click: _vm.destroy }
+                    },
+                    [_vm._v("Clear Completed")]
+                  )
+                ])
               ])
             ],
-            2
+            1
           )
         ])
       ])
@@ -37957,42 +38137,6 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "card-header" }, [
       _c("h1", { staticClass: "text-center" }, [_vm._v("todos")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-6 text-center" }, [
-      _c(
-        "a",
-        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
-        [_vm._v("All |")]
-      ),
-      _vm._v(" "),
-      _c(
-        "a",
-        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
-        [_vm._v("| Active |")]
-      ),
-      _vm._v(" "),
-      _c(
-        "a",
-        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
-        [_vm._v("| Completed")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-3 text-right" }, [
-      _c(
-        "a",
-        { staticClass: "text-muted text-decoration-none", attrs: { href: "" } },
-        [_vm._v("Clear Completed")]
-      )
     ])
   }
 ]

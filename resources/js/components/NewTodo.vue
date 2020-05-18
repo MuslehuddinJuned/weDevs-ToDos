@@ -2,7 +2,7 @@
     <div>
         <form @submit.prevent="create">
             <div class=" form-group">
-                <input name="todoItem" id="todoItem"  v-on:keyup.enter="handleSubmit" v-on:keyup.esc="clearText" v-model="todoItem" type="text" class="form-control" placeholder="What needs to be done?">
+                <input name="todoItem" id="todoItem"  @keyup.enter="handleSubmit" v-on:keyup.esc="clearText" v-model="todoItem" type="text" class="form-control" placeholder="What needs to be done?">
             </div>
         </form> 
     </div>
@@ -25,7 +25,8 @@ export default {
                     alert(error.response.data.message);
                 })
                 .then(({data}) =>{
-                    this.$emit('created', data.NewTask);
+                    this.$emit('created_1', data.NewTask);
+                    this.$emit('created_2', data.IncompleteList);
             })
             },
             handleSubmit () {

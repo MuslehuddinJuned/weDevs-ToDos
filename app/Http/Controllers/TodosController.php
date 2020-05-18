@@ -17,8 +17,9 @@ class TodosController extends Controller
     {
         $todo = Todo::orderBy('created_at','asc')->get();
         $todoRemain = DB::select('SELECT * FROM `todos` where complete IS NULL');
+        $todoComplete = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
 
-        return view('./todo', compact('todo', 'todoRemain'));
+        return view('./todo', compact('todo', 'todoRemain', 'todoComplete'));
     }
 
     /**
@@ -39,19 +40,23 @@ class TodosController extends Controller
      */
     public function store(Request $request)
     {
+        $Todo = new Todo;
+        $Todo->name = $request['name'];
+        $Todo->save();
 
-            // $newtask = $request->user()->todos()->create();
+        // $FullList = Todo::orderBy('created_at','asc')->get();
+        $IncompleteList = DB::select('SELECT * FROM `todos` where complete IS NULL');
+        // $CompleteList = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
 
-            $Todo = new Todo;
-            $Todo->name = $request['name'];
-            $Todo->save();
+        if(request()->expectsJson()){
+            return response()->json([
+                // 'FullList' => $FullList,
+                'IncompleteList' => $IncompleteList,
+                // 'CompleteList' => $CompleteList,
 
-            if(request()->expectsJson()){
-                return response()->json([
-                    'NewTask' => $Todo
-                ]);
-            }
-        
+                'NewTask' => $Todo
+            ]);
+        }        
     }
 
     /**
@@ -85,24 +90,28 @@ class TodosController extends Controller
      */
     public function update(Request $request, Todo $todo)
     {
-        // print_r($request);
-        // dd($request); 
-        // $todo->update($request);
-        $Todo = Todo::find($todo->id);
-        if($request['complete'])
-        $todo->complete = $request['complete'];
-        if($request['name'])
-        $todo->name = $request['name'];
-        if(!$request['name'] && !$request['complete'])
-        $todo->complete = NULL;
-        $todo->save();
-        // $todoList = Todo::orderBy('created_at','asc')->get();
+        $Todo = Todo::find($todo->id);        
 
-        if(request()->expectsJson()){
-            return response()->json([
-                // 'todoList' => $todoList
-            ]);
+        if($request['name']){
+            $todo->name = $request['name'];
+            $todo->save();
         }
+
+        else {
+            $todo->complete = $request['complete'];
+            $todo->save();
+        }
+            $FullList = Todo::orderBy('created_at','asc')->get();
+            $IncompleteList = DB::select('SELECT * FROM `todos` where complete IS NULL');
+            $CompleteList = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
+
+            if(request()->expectsJson()){
+                return response()->json([
+                    'FullList' => $FullList,
+                    'IncompleteList' => $IncompleteList,
+                    'CompleteList' => $CompleteList
+                ]);
+            }
     }
 
     /**
@@ -111,13 +120,26 @@ class TodosController extends Controller
      * @param  \App\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Todo $todo)
+    public function destroy($id)
     {
-        $todo->delete();
-        // if(request()->expectsJson()){
-        //     return response()->json([
-        //         'message' => "Deleted"
-        //     ]);
-        // }
+        if($id == 'complete')
+        Todo::where('complete', 'yes')->delete();        
+
+        else{
+            $todo = Todo::find($id);
+            $todo->delete();
+        }
+        
+        $FullList = Todo::orderBy('created_at','asc')->get();
+        $IncompleteList = DB::select('SELECT * FROM `todos` where complete IS NULL');
+        $CompleteList = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
+
+        if(request()->expectsJson()){
+            return response()->json([
+                'FullList' => $FullList,
+                'IncompleteList' => $IncompleteList,
+                'CompleteList' => $CompleteList
+            ]);
+        }
     }
 }
