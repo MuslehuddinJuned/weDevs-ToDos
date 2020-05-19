@@ -16,8 +16,7 @@
                         <div v-else>
                             <todo @created_1="TaskAll" @created_2="TaskDone" @created_3="TaskLeft" v-for="todos in todoItems" :todoItems="todos" :key="todos.id"></todo>
                         </div>
-                        <hr>
-                        <div class="row">
+                        <div v-if="todoItems.length>0" class="row border-top mt-2 pt-2">
                             <div class="col-3">
                                 {{ TaskRemain }} 
                             </div>
