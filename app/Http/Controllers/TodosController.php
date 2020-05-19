@@ -16,10 +16,8 @@ class TodosController extends Controller
     public function index()
     {
         $todo = Todo::orderBy('created_at','asc')->get();        
-        $todoRemain = Todo::where('complete', 'Yes')->get();
+        $todoRemain = Todo::where('complete', NULL)->get();
         $todoComplete = Todo::where('complete', 'Yes')->get();
-        // $todoRemain = DB::select('SELECT * FROM `todos` where complete IS NULL');
-        // $todoComplete = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
 
         return view('./todo', compact('todo', 'todoRemain', 'todoComplete'));
     }
@@ -46,15 +44,11 @@ class TodosController extends Controller
         $Todo->name = $request['name'];
         $Todo->save();
 
-        // $FullList = Todo::orderBy('created_at','asc')->get();
-        $IncompleteList = DB::select('SELECT * FROM `todos` where complete IS NULL');
-        // $CompleteList = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
+        $IncompleteList = Todo::where('complete', NULL)->get();
 
         if(request()->expectsJson()){
             return response()->json([
-                // 'FullList' => $FullList,
                 'IncompleteList' => $IncompleteList,
-                // 'CompleteList' => $CompleteList,
 
                 'NewTask' => $Todo
             ]);
@@ -104,8 +98,8 @@ class TodosController extends Controller
             $todo->save();
         }
             $FullList = Todo::orderBy('created_at','asc')->get();
-            $IncompleteList = DB::select('SELECT * FROM `todos` where complete IS NULL');
-            $CompleteList = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
+            $IncompleteList = Todo::where('complete', NULL)->get();
+            $CompleteList = Todo::where('complete', 'Yes')->get();
 
             if(request()->expectsJson()){
                 return response()->json([
@@ -133,8 +127,8 @@ class TodosController extends Controller
         }
         
         $FullList = Todo::orderBy('created_at','asc')->get();
-        $IncompleteList = DB::select('SELECT * FROM `todos` where complete IS NULL');
-        $CompleteList = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
+        $IncompleteList = Todo::where('complete', NULL)->get();
+        $CompleteList = Todo::where('complete', 'Yes')->get();
 
         if(request()->expectsJson()){
             return response()->json([
