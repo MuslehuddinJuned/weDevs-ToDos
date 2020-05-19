@@ -119,7 +119,7 @@ class TodosController extends Controller
     public function destroy($id)
     {
         if($id == 'complete')
-        Todo::where('complete', 'yes')->delete();        
+        Todo::where('complete', 'Yes')->delete();        
 
         else{
             $todo = Todo::find($id);
