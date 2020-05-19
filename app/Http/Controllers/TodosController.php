@@ -15,9 +15,11 @@ class TodosController extends Controller
      */
     public function index()
     {
-        $todo = Todo::orderBy('created_at','asc')->get();
-        $todoRemain = DB::select('SELECT * FROM `todos` where complete IS NULL');
-        $todoComplete = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
+        $todo = Todo::orderBy('created_at','asc')->get();        
+        $todoRemain = Todo::where('complete', 'Yes')->get();
+        $todoComplete = Todo::where('complete', 'Yes')->get();
+        // $todoRemain = DB::select('SELECT * FROM `todos` where complete IS NULL');
+        // $todoComplete = DB::select('SELECT * FROM `todos` where complete IS NOT NULL');
 
         return view('./todo', compact('todo', 'todoRemain', 'todoComplete'));
     }
