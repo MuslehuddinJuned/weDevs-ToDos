@@ -1,10 +1,12 @@
 <template>
 <div>  
         <div class="input-icons w-100">
-            <i v-if="complete" @click="incomplete" class="far fa-check-circle icon text-success"></i>
-            <i v-else @click="completed" class="far fa-circle icon text-secondary"></i>
-            <input  name="todoItem" v-model="todoItem" @keyup.enter="updateTask" @blur="updateTask" class="input-field border-0 w-100 lead" :class="classes" type="text">
-            <i @click="destroy" class="fas fa-times icon text-light"></i>      
+            <form>
+                <i v-if="complete" @click="incomplete" class="far fa-check-circle icon text-success"></i>
+                <i v-else @click="completed" class="far fa-circle icon text-secondary"></i>
+                <input  name="todoItem" v-model="todoItem" @keyup.enter="updateTask" @blur="updateTask" class="input-field border-0 w-100 lead" :class="classes" type="text">
+                <i @click="destroy" class="fas fa-times icon text-light"></i>  
+            </form>    
         </div>
 </div>
 </template>
