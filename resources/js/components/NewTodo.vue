@@ -27,7 +27,7 @@ export default {
                 .then(({data}) =>{
                     this.$emit('created_1', data.NewTask);
                     this.$emit('created_2', data.IncompleteList);
-            })
+                })
             },
             handleSubmit () {
                 if (this.todoItem.trim()) {

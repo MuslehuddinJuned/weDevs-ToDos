@@ -49,7 +49,6 @@ class TodosController extends Controller
         if(request()->expectsJson()){
             return response()->json([
                 'IncompleteList' => $IncompleteList,
-
                 'NewTask' => $Todo
             ]);
         }        
