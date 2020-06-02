@@ -26,7 +26,8 @@ export default {
                 })
                 .then(({data}) =>{
                     this.$emit('created_1', data.NewTask);
-                    this.$emit('created_2', data.IncompleteList);
+                    this.$emit('created_2', data.todoList);                  
+                    this.$emit('created_3', data.todoList_count);  
                 })
             },
             handleSubmit () {

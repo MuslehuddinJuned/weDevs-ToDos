@@ -6,16 +6,8 @@
                     <div class="card-header"><h1 class="text-center">todos</h1></div>
 
                     <div class="card-body">                    
-                        <new-todo @created_1="add" @created_2="TaskLeft"></new-todo>
-                        <div v-if="list == 'complete'">
-                            <todo @created_1="TaskAll" @created_2="TaskDone" @created_3="TaskLeft" v-for="todos in todoDone" :todoItems="todos" :key="todos.id"></todo>
-                        </div>
-                        <div v-else-if="list == 'incomplete'">
-                            <todo @created_1="TaskAll" @created_2="TaskDone" @created_3="TaskLeft" v-for="todos in todoLeft" :todoItems="todos" :key="todos.id"></todo>
-                        </div>
-                        <div v-else>
-                            <todo @created_1="TaskAll" @created_2="TaskDone" @created_3="TaskLeft" v-for="todos in todoItems" :todoItems="todos" :key="todos.id"></todo>
-                        </div>
+                        <new-todo @created_1="add" @created_2="TaskAll" @created_3="TaskLeft"></new-todo>
+                        <todo @created_1="TaskAll" @created_2="TaskLeft" v-for="todos in todoItems" :todoItems="todos" :list="list" :key="todos.id"></todo>
                         <div v-if="todoItems.length>0" class="row border-top mt-2 pt-2">
                             <div class="col-3">
                                 {{ TaskRemain }} 
@@ -42,14 +34,12 @@ import NewTodo from './NewTodo.vue';
     export default {
         components: {Todo, NewTodo},
 
-        props: ['todo', 'todoremain', 'todocomplete'],
+        props: ['todo', 'count'],
 
         data(){
             return {
                 todoItems: [],
-                todoLeft: [],
-                todoDone: [],
-                count: 0,
+                counts: 0,
                 list: 'all',
                 id: 'complete'
             }
@@ -57,9 +47,7 @@ import NewTodo from './NewTodo.vue';
 
         created(){
             this.todoItems = this.todo;
-            this.todoLeft = this.todoremain;
-            this.todoDone = this.todocomplete;
-            this.count = this.todoremain.length;
+            this.counts = this.count; //this.todoItems.length;  // need to change
         },
 
         methods: { 
@@ -69,34 +57,24 @@ import NewTodo from './NewTodo.vue';
                     alert(err.response.data.message);
                 })
                 .then(({data})=>{
-                    this.todoItems = data.FullList;
-                    this.todoDone = data.CompleteList;
-                    this.todoLeft = data.IncompleteList;                 
+                    this.todoItems = data.todoList;                 
                 });
             },           
             add(NewTask){
                 this.todoItems.push(NewTask);
             },
 
-            TaskAll(FullList){
-                this.todoItems = FullList;
-                this.count = this.todoLeft.length;
+            TaskAll(todoList){
+                this.todoItems = todoList;
             },
-
-            TaskDone(CompleteList){
-                this.todoDone = CompleteList;
-                this.count = this.todoLeft.length;
-            },
-
-            TaskLeft(IncompleteList){
-                this.todoLeft = IncompleteList;
-                this.count = this.todoLeft.length;
+            TaskLeft(todoList_count){
+                this.counts = todoList_count; 
             }
         },
 
         computed: {
             TaskRemain(){
-                return this.count + " " + (this.count > 1 ? 'items left' : 'item left');
+                return this.counts + " " + (this.counts > 1 ? 'items left' : 'item left');
             },
 
             classes_1(){
