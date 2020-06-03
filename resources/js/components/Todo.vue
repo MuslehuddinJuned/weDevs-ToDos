@@ -2,18 +2,18 @@
     <div>
         <div class="input-icons w-100" v-if="(todoItems.complete == 'Yes') && (list=='complete')">
             <i @click="incomplete" class="far fa-check-circle icon text-success"></i>
-            <input  name="todoItem" v-model="todoItem" @keyup.enter="updateTask" @blur="updateTask" class="input-field border-0 w-100 lead" :class="classes" type="text">
+            <input  name="todoItem" v-model="todoItem" @keyup="searchTimeOut()" class="input-field border-0 w-100 lead" :class="classes" type="text">
             <i @click="destroy" class="fas fa-times icon text-light"></i>                 
         </div>  
         <div class="input-icons w-100" v-else-if="(todoItems.complete == null) && (list=='incomplete') ">
             <i @click="completed" class="far fa-circle icon text-secondary"></i>
-            <input  name="todoItem" v-model="todoItem" @keyup.enter="updateTask" @blur="updateTask" class="input-field border-0 w-100 lead" :class="classes" type="text">
+            <input  name="todoItem" v-model="todoItem" @keyup="searchTimeOut()" class="input-field border-0 w-100 lead" :class="classes" type="text">
             <i @click="destroy" class="fas fa-times icon text-light"></i>                 
         </div>  
         <div class="input-icons w-100" v-else-if="list=='all'">
             <i v-if="complete" @click="incomplete" class="far fa-check-circle icon text-success"></i>
             <i v-else @click="completed" class="far fa-circle icon text-secondary"></i>
-            <input  name="todoItem" v-model="todoItem" @keyup.enter="updateTask" @blur="updateTask" class="input-field border-0 w-100 lead" :class="classes" type="text">
+            <input  name="todoItem" v-model="todoItem" @keyup="searchTimeOut()" class="input-field border-0 w-100 lead" :class="classes" type="text">
             <i @click="destroy" class="fas fa-times icon text-light"></i>                 
         </div>            
     </div>
@@ -54,6 +54,16 @@
                 .catch(err => {
                     alert(err.response.data.message);
                 })
+            },
+
+            searchTimeOut() {  
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                }
+                this.timer = setTimeout(() => {
+                    this.updateTask();
+                }, 800);
             },
 
             completed(){
