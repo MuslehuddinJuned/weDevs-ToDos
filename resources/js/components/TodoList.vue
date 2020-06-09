@@ -6,8 +6,8 @@
                     <div class="card-header"><h1 class="text-center">todos</h1></div>
 
                     <div class="card-body">                    
-                        <new-todo @created_1="add" @created_2="TaskAll" @created_3="TaskLeft"></new-todo>
-                        <todo @created_1="TaskAll" @created_2="TaskLeft" v-for="todos in todoItems" :todoItems="todos" :list="list" :key="todos.id"></todo>
+                        <new-todo @created_1="add" @created_2="TaskAll"></new-todo>
+                        <todo @created_1="TaskAll" v-for="todos in todoItems" :todoItems="todos" :list="list" :key="todos.id"></todo>
                         <div v-if="todoItems.length>0" class="row border-top mt-2 pt-2">
                             <div class="col-3">
                                 {{ TaskRemain }} 
@@ -34,7 +34,7 @@ import NewTodo from './NewTodo.vue';
     export default {
         components: {Todo, NewTodo},
 
-        props: ['todo', 'count'],
+        props: ['todo'],
 
         data(){
             return {
@@ -47,7 +47,6 @@ import NewTodo from './NewTodo.vue';
 
         created(){
             this.todoItems = this.todo;
-            this.counts = this.count; //this.todoItems.length;  // need to change
         },
 
         methods: { 
@@ -66,15 +65,19 @@ import NewTodo from './NewTodo.vue';
 
             TaskAll(todoList){
                 this.todoItems = todoList;
-            },
-            TaskLeft(todoList_count){
-                this.counts = todoList_count; 
             }
         },
 
         computed: {
             TaskRemain(){
-                return this.counts + " " + (this.counts > 1 ? 'items left' : 'item left');
+                let counts = 0
+                for (let index = 0; index < this.todoItems.length; index++) {
+                    if(this.todoItems[index]['complete'] != 'Yes'){
+                        counts++
+                    }
+                    
+                }
+                return counts + " " + (counts > 1 ? 'items left' : 'item left');
             },
 
             classes_1(){

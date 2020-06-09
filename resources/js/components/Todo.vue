@@ -13,7 +13,7 @@
         <div class="input-icons w-100" v-else-if="list=='all'">
             <i v-if="complete" @click="incomplete" class="far fa-check-circle icon text-success"></i>
             <i v-else @click="completed" class="far fa-circle icon text-secondary"></i>
-            <input  name="todoItem" v-model="todoItem" @keyup="searchTimeOut()" class="input-field border-0 w-100 lead" :class="classes" type="text">
+            <input  name="todoItem" v-model="todoItem" @keyup="lazyUpdate()" class="input-field border-0 w-100 lead" :class="classes" type="text">
             <i @click="destroy" class="fas fa-times icon text-light"></i>                 
         </div>            
     </div>
@@ -38,8 +38,7 @@
                 })
                 .then(({data})=>{
                     $(this.$el).fadeOut(200)
-                    this.$emit('created_1', data.todoList);                  
-                    this.$emit('created_2', data.todoList_count);                  
+                    this.$emit('created_1', data.todoList);                 
                 });
             },
 
@@ -48,15 +47,14 @@
                     name: this.todoItem
                 })
                 .then(({data}) => {
-                    this.$emit('created_1', data.todoList);                  
-                    this.$emit('created_2', data.todoList_count);  
+                    this.$emit('created_1', data.todoList);  
                 })
                 .catch(err => {
                     alert(err.response.data.message);
                 })
             },
 
-            searchTimeOut() {  
+            lazyUpdate() {  
                 if (this.timer) {
                     clearTimeout(this.timer);
                     this.timer = null;
@@ -72,8 +70,7 @@
                 })
                 .then(({data}) => {
                     this.complete = true;
-                    this.$emit('created_1', data.todoList);                  
-                    this.$emit('created_2', data.todoList_count);  
+                    this.$emit('created_1', data.todoList); 
                 })
                 .catch(err => {
                     alert(err.response.data.message);
@@ -89,8 +86,7 @@
                 })
                 .then(({data}) => {
                     this.complete = false;
-                    this.$emit('created_1', data.todoList);                  
-                    this.$emit('created_2', data.todoList_count);  
+                    this.$emit('created_1', data.todoList); 
                 })
             }
         },

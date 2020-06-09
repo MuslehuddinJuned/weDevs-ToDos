@@ -15,9 +15,8 @@ class TodosController extends Controller
      */
     public function index()
     {
-        $todoList = Todo::orderBy('created_at','asc')->get();
-        $todoList_count = Todo::where('complete', null)->count();       
-        return view('./todo', compact('todoList', 'todoList_count'));
+        $todoList = Todo::orderBy('created_at','asc')->get();      
+        return view('./todo', compact('todoList'));
     }
 
     /**
@@ -43,13 +42,11 @@ class TodosController extends Controller
         $Todo->save();
 
         $todoList = Todo::orderBy('created_at','asc')->get(); 
-        $todoList_count = Todo::where('complete', null)->count(); 
 
         if(request()->expectsJson()){
             return response()->json([
                 'todoList' => $todoList,
-                'NewTask' => $Todo,
-                'todoList_count' => $todoList_count
+                'NewTask' => $Todo
             ]);
         }        
     }
@@ -97,12 +94,10 @@ class TodosController extends Controller
             $todo->save();
         }
             $todoList = Todo::orderBy('created_at','asc')->get();
-            $todoList_count = Todo::where('complete', null)->count(); 
 
             if(request()->expectsJson()){
                 return response()->json([
-                    'todoList' => $todoList,
-                    'todoList_count' => $todoList_count
+                    'todoList' => $todoList
                 ]);
             }
     }
@@ -123,13 +118,11 @@ class TodosController extends Controller
             $todo->delete();
         }
         
-        $todoList = Todo::orderBy('created_at','asc')->get();
-        $todoList_count = Todo::where('complete', null)->count(); 
+        $todoList = Todo::orderBy('created_at','asc')->get(); 
 
         if(request()->expectsJson()){
             return response()->json([
-                'todoList' => $todoList,
-                'todoList_count' => $todoList_count
+                'todoList' => $todoList
             ]);
         }
     }
